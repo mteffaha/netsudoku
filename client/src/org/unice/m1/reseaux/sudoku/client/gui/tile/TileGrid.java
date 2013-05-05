@@ -14,6 +14,7 @@ public class TileGrid extends  JPanel{
     private JPanel[] panes;
     private int width;
 
+
     public TileGrid(int width){
         panes = new JPanel[WIDTH_GRID*HEIGHT_GRID];
         Border grayline = BorderFactory.createLineBorder(Color.GRAY);
@@ -42,12 +43,14 @@ public class TileGrid extends  JPanel{
             return -1;
         }
 
-        return ((Tile)panes[(x*WIDTH_GRID)+HEIGHT_GRID]).getNumber();
+        return ((Tile)panes[(y*WIDTH_GRID)+x]).getNumber();
     }
 
     public void setNumber(int x,int y, int number){
 
     }
+    
+
 
 
     public static void main(String[] args){

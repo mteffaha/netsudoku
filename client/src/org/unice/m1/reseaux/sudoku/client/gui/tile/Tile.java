@@ -18,6 +18,9 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
 
     private JPanel content;
     private int width = 0;
+    private static boolean isLocked;
+
+
     public Tile(int width){
         this.width = width;
         content =  new Display(this.width,0);
@@ -37,8 +40,8 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        if(this.content instanceof Display && ( ((Display)this.content).getNumber() <= 0 || ((Display)this.content).getNumber() >9)){
-            System.out.println("Click Event");
+        if(!isLocked() && this.content instanceof Display && ( ((Display)this.content).getNumber() <= 0 || ((Display)this.content).getNumber() >9)){
+            lock();
             this.remove(this.content);
             this.content = new Selector(this.width);
             ((ActionPerformerIssuer)this.content).regiterActionPerformer(this);
@@ -76,24 +79,29 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public static void main(String[] args){
-        JFrame frame =  new JFrame();
-        Tile tile =  new Tile(69);
-        frame.add(tile);
-        frame.setVisible(true);
-        frame.pack();
+    private static boolean isLocked(){
+
+        return isLocked;
+    }
+
+    private static void lock(){
+        isLocked = true;
+    }
+
+    private static void unlock(){
+        isLocked = false;
     }
 
     @Override
     public void performAction(Object sender) {
-        System.out.println("PerformAction");
         if(sender instanceof Selector){
             Selector snd =(Selector)sender;
             this.remove(this.content);
+
             this.content = new Display(this.width,snd.getNumber());
             this.add(this.content);
             this.revalidate();
-
+            unlock();
         }
     }
 }
