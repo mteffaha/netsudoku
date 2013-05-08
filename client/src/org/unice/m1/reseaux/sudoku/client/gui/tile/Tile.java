@@ -2,6 +2,8 @@ package org.unice.m1.reseaux.sudoku.client.gui.tile;
 
 import org.unice.m1.reseaux.sudoku.client.core.ActionPerformer;
 import org.unice.m1.reseaux.sudoku.client.core.ActionPerformerIssuer;
+import org.unice.m1.reseaux.sudoku.client.gui.MainWindow;
+import org.unice.m1.reseaux.sudoku.client.net.Client;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -19,10 +21,13 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
     private JPanel content;
     private int width = 0;
     private static boolean isLocked;
+    private int x,y;
 
 
-    public Tile(int width){
+    public Tile(int width,int x,int y){
         this.width = width;
+        this.x = x;
+        this.y = y;
         content =  new Display(this.width,0);
         this.add(this.content);
         this.setPreferredSize(new Dimension(this.width,this.width));
@@ -30,9 +35,14 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
         this.setBorder(new EmptyBorder(10, 10, 10, 10) );
 
     }
-    public Tile(int width,int number){
+    public Tile(int width,int x,int y,int number){
+        this.x = x;
+        this.y = y;
+        this.width = width;
         content =  new Display(width,number);
         //this.setPreferredSize(new Dimension(this.width,this.width));
+        this.setPreferredSize(new Dimension(this.width,this.width));
+        this.setBorder(new EmptyBorder(10, 10, 10, 10) );
         this.add(this.content);
         this.addMouseListener(this);
     }
@@ -57,6 +67,19 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
         }else{
             return -1;
         }
+    }
+
+    public void setNumber(int number){
+        unlock();
+        if(this.content instanceof Display){
+            ((Display) this.content).setNumber(number);
+        }else {
+            this.remove(this.content);
+            this.content =  new Display(this.width,number);
+            this.add(this.content);
+        }
+        this.revalidate();
+
     }
 
     @Override
@@ -98,10 +121,10 @@ public class Tile extends JPanel implements MouseListener, ActionPerformer{
             Selector snd =(Selector)sender;
             this.remove(this.content);
 
-            this.content = new Display(this.width,snd.getNumber());
+            this.content = new Waiting(this.width);
+            MainWindow.client.sendMove(this.x,this.y,snd.getNumber());
             this.add(this.content);
             this.revalidate();
-            unlock();
         }
     }
 }
