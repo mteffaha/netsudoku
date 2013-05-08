@@ -65,13 +65,15 @@ public class Client extends Player  {
             // Fetching the players Info
 
 
-            String str= in.readLine();
-            System.out.println(""+str);
+            String[] idAndCount= in.readLine().split(":");
+            String str = "";
 
-            Integer count = Integer.parseInt(str);
+            Integer count = Integer.parseInt(idAndCount[1]);
+            mainWindow.ownID = Integer.parseInt(idAndCount[0]);
+            mainWindow.playersCount = count;
+            //this.setID();
             for(int i=0;i<count;i++){
                 str = in.readLine();
-                System.out.println(""+str);
                 String[] info = str.split("//");
                 this.mainWindow.players[i] =  new Player();
                 this.mainWindow.players[i].setName(info[1]);
@@ -87,9 +89,13 @@ public class Client extends Player  {
                     try {
                         while(true){
                             int[] msg =  new int[7];
-                            for(int i=0;i<7;i++){
+                            for(int i=0;i<3;i++){
                             msg[i] = Integer.parseInt(""+Character.toString((char)in.read()));
                             }
+                            if(msg[2] != 3){
+                                for(int i=3;i<7;i++){
+                                    msg[i] = Integer.parseInt(""+Character.toString((char)in.read()));
+                                }
                             switch(msg[2]){
                                 case 0:  // Player Lost
                                     mainWindow.players[msg[6]].setPenality(mainWindow.players[msg[6]].getPenality()+1);
@@ -114,7 +120,17 @@ public class Client extends Player  {
                                     break;
 
                             }
-                            // TODO : check broadcast information
+                            }else{
+
+                                String[] info = in.readLine().split(":");
+                                mainWindow.players[mainWindow.playersCount] = new Player();
+                                mainWindow.players[mainWindow.playersCount].setID(Integer.parseInt(info[0]));
+                                mainWindow.players[mainWindow.playersCount].setName(info[1]);
+                                mainWindow.players[mainWindow.playersCount].setScore(0);
+                                mainWindow.players[mainWindow.playersCount].setPenality(0);
+                                mainWindow.updateListPlayers();
+
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -21,6 +21,7 @@ public class MainWindow extends JFrame {
     public int playersCount=0;
     public Grid grid;
     public static Client client;
+    public int ownID = -1;
 
     public MainWindow(String playerName) {
 
@@ -58,7 +59,9 @@ public class MainWindow extends JFrame {
                             "", 1);
                 } else{
                     client = new Client(this,name);
+
                     client.init();
+                    this.setTitle("NetSudoku : "+players[ownID].getName());
                     break;
                 }
 

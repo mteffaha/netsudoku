@@ -1,5 +1,6 @@
 package org.unice.m1.reseaux.sudoku.server.net;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.unice.m1.reseaux.sudoku.server.Logger;
 
 import java.io.*;
@@ -43,6 +44,7 @@ public class Player implements Runnable {
             players[count].name = new String(chars).trim();
             players[count].id = count;
             new Thread(players[count]).start();
+            Server.getInstance().BroadcastMessage("003"+players[count]+"\n");
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -56,6 +58,9 @@ public class Player implements Runnable {
 
     public static int getCountPlayers() {
         return count;
+    }
+    public String toString(){
+        return this.id+":"+name;
     }
 
     public static Player getPlayer(int index) {
@@ -75,7 +80,6 @@ public class Player implements Runnable {
 
     public void sendMessage(String Message){
         try {
-            System.out.println("Message : "+Message);
             out.write(Message.getBytes());
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -91,7 +95,8 @@ public class Player implements Runnable {
         try {
             out = socket.getOutputStream();
             in = socket.getInputStream();
-            out.write(Server.getInstance().GameInfo().getBytes());
+            out.write(Server.getInstance().GameInfo(this.id).getBytes());
+
 
             while (socket.isConnected()) {
                 int[] move =  new int[3];
@@ -101,15 +106,18 @@ public class Player implements Runnable {
                 if(Server.getInstance().playMove(move[0],move[1],move[2])){
                      // Broadcast that this player won
                     score++;
+                    Logger.Log("Player : "+getName()+" Played a Good Move X:"+move[0]+" Y:"+move[1]+" N:"+move[2]);
                     Server.getInstance().BroadcastMessage("002"+move[0]+""+move[1]+""+move[2]+id);
                 }else{
                     if(Server.getInstance().isGoodMove(move[0],move[1],move[2])){
                         // broadcast this player failure without penality
                         Server.getInstance().BroadcastMessage("001"+move[0]+""+move[1]+""+move[2]+id);
+                        Logger.Log("Player : "+getName()+" Played a Good Move, but too late X:"+move[0]+" Y:"+move[1]+" N:"+move[2]);
                     }else{
                         // broadcast this player failure with penality
                         penality++;
                         Server.getInstance().BroadcastMessage("000"+move[0]+""+move[1]+""+move[2]+id);
+                        Logger.Log("Player : "+getName()+" Played a Bad Move X:"+move[0]+" Y:"+move[1]+" N:"+move[2]);
 
 
                     }
