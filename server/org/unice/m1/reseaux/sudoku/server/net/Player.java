@@ -1,6 +1,5 @@
 package org.unice.m1.reseaux.sudoku.server.net;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.unice.m1.reseaux.sudoku.server.Logger;
 
 import java.io.*;
