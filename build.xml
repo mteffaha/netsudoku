@@ -1,0 +1,61 @@
+<project name="MyProject" default="dist" basedir=".">
+    <description>
+        Build File for NetSudoku 
+    </description>
+  <property name="srcClient" location="client/src"/>
+  <property name="srcServer" location="server"/>
+  <property name="buildClient" location="build/client"/>
+  <property name="buildServer" location="build/server"/>
+  <property name="dist" location="dist"/>
+  
+
+  <target name="init">
+    <mkdir dir="build"/>
+    <mkdir dir="${buildClient}"/>
+    <mkdir dir="${buildServer}"/>
+    <mkdir dir="${buildServer}/levels" />
+  </target>
+
+  <target name="compileClient" depends="init"
+        description="compile the source " >
+    <javac srcdir="${srcClient}" destdir="${buildClient}"/>
+  </target>
+  <target name="compileServer" depends="init"
+        description="compile the source " >
+    <javac srcdir="${srcServer}" destdir="${buildServer}"/>
+    <copy todir="${buildServer}/levels" flatten="true">
+    <resources>
+      <file file="${srcServer}/levels/pb1.txt"/>
+    </resources>
+  </copy>
+    
+   </target>
+
+  <target name="dist" depends="compileClient,compileServer"
+        description="generate the distribution" >
+    <mkdir dir="${dist}"/>
+
+<jar
+    destfile="${dist}/netsudoku-client.jar"
+
+    basedir="${buildClient}">
+    <manifest>
+        <attribute name="Main-Class" value="org.unice.m1.reseaux.sudoku.client.gui.Mainwindow"/>
+    </manifest>
+</jar>
+<jar
+    destfile="${dist}/netsudoku-server.jar"
+
+    basedir="${buildServer}">
+    <manifest>
+        <attribute name="Main-Class" value="org.unice.m1.reseaux.sudoku.server.main"/>
+    </manifest>
+</jar>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <delete dir="build"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
